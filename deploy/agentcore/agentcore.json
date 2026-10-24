@@ -1,0 +1,55 @@
+{
+  "$schema": "https://schema.agentcore.aws.dev/v1/agentcore.json",
+  "name": "deciderkit",
+  "version": 1,
+  "managedBy": "CDK",
+  "tags": {
+    "agentcore:created-by": "agentcore-cli",
+    "agentcore:project-name": "deciderkit"
+  },
+  "runtimes": [
+    {
+      "name": "agent",
+      "description": "Strands Decider hackathon agent (Amazon Bedrock + Strands Decider 2B)",
+      "build": "CodeZip",
+      "entrypoint": "main.py",
+      "codeLocation": "app/agent/",
+      "runtimeVersion": "PYTHON_3_12",
+      "envVars": [],
+      "networkMode": "PUBLIC",
+      "protocol": "HTTP"
+    }
+  ],
+  "memories": [
+    {
+      "name": "reflexboundaries",
+      "eventExpiryDuration": 30,
+      "strategies": [
+        {
+          "type": "USER_PREFERENCE",
+          "namespaceTemplates": [
+            "/users/{actorId}/preferences"
+          ]
+        },
+        {
+          "type": "SEMANTIC",
+          "namespaceTemplates": [
+            "/users/{actorId}/facts"
+          ]
+        }
+      ]
+    }
+  ],
+  "knowledgeBases": [],
+  "credentials": [],
+  "evaluators": [],
+  "onlineEvalConfigs": [],
+  "agentCoreGateways": [],
+  "policyEngines": [],
+  "configBundles": [],
+  "abTests": [],
+  "harnesses": [],
+  "datasets": [],
+  "capacityProviders": [],
+  "payments": []
+}

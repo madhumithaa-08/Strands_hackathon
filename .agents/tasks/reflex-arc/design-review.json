@@ -1,0 +1,48 @@
+{
+  "verdict": "CHANGES_REQUESTED",
+  "findings": [
+    {
+      "id": 1,
+      "severity": "MEDIUM",
+      "where": "design.md §3.4/§5 + AC1/AC2; scripts/check_submission.py::check_pattern lines 38-40",
+      "problem": "check_pattern fails unless the decision.py docstring contains the section markers 'What it does', 'Typed questions', 'Wiring', and 'reuse' (case-insensitive substring match), in addition to starting with 'REUSABLE DECISION PATTERN:'. The design only pins the opening line, so a rewritten Reflex-Arc docstring could omit a required heading and make ./kit check FAIL, contradicting AC2's claim that ./kit check PASSES.",
+      "fix": "Add a contract line to §3.4/§5: the decision.py docstring MUST start with 'REUSABLE DECISION PATTERN:' AND contain the four headings the checker greps for — 'What it does', 'Typed questions' (and options), 'Wiring', and a reuse note (substring 'reuse'). Use the current kit example docstring as the template."
+    },
+    {
+      "id": 2,
+      "severity": "MEDIUM",
+      "where": "design.md §3.3 (record field) vs §3.5 (verdict read); AC3; make_video.facts_for",
+      "problem": "severity is asserted to be '0..1 = score/2' but the single computation site is not pinned, and §3.5 reads severity via .label/.score for the verdict while §3.3 stores a separate derived float. An implementer could store .score (0..2, outside [0,1]) or max(probabilities) by mistake, breaking both the 'all five probabilities in 0..1' claim (AC3) and the make_video first-three-floats narration (a value >1 is filtered out, re-opening the MEDIUM-5 risk of omitting the severity signal on a FREEZE beat).",
+      "fix": "Pin one computation in §3.3: severity = round(ans['severity'].score / (len(SEVERITY_LEVELS)-1), 3) with SEVERITY_LEVELS=['fine','drifting','off_the_rails'] defined once in decision.py, and extend the §11 record-key-order unit test to assert 0.0 <= record['severity'] <= 1.0 for every built record."
+    },
+    {
+      "id": 3,
+      "severity": "NIT",
+      "where": "design.md §4.2 _finish / driver",
+      "problem": "_finish reads guard.last_result, guard.last_generation_note, guard.turn_started, but these per-turn attributes are introduced inline and never enumerated; the driver snippet never shows guard.last_result being assigned from the completed stream_async result, so an implementer could leave it unset.",
+      "fix": "Add a 'ReflexArc per-turn state' list enumerating every attribute (_guided, _scored, _checks_used, turn_started, last_result, last_generation_note) and its setter, and state explicitly that the driver assigns guard.last_result from the completed stream_async result when interrupted is False."
+    },
+    {
+      "id": 4,
+      "severity": "NIT",
+      "where": "design.md §3.2/§4.1/§4.2 (_task_for, spec_excerpt_for, current_task)",
+      "problem": "The mandatory '--- CURRENT TASK ---' state section and spec_excerpt_for(task) depend on _task_for(message), which is never defined. A free-form chat() message has no task id; a wrong guess makes grounded/in_scope compare against the wrong spec slice and the decision becomes unreliable.",
+      "fix": "Define _task_for(message) concretely (e.g. first incomplete task in tasks.json, or keyword match against task titles, or carry the task id in demo turns) and specify that an unidentified task renders a literal '(task not identified)' so the layout stays stable and the decider is not misled."
+    },
+    {
+      "id": 5,
+      "severity": "NIT",
+      "where": "design.md §7; scripts/make_video.py:89 (ds[:2])",
+      "problem": "make_video.facts_for narrates only the first two decisions per turn, but a turn can fire up to MAX_CHECKS_PER_TURN=4 reflex checks; later decisive verdicts would not be narrated.",
+      "fix": "Note in §7 that each demo beat must be authored so the decisive reflex verdict (CUT/FREEZE/STEER) is among the first two decider calls of the turn."
+    },
+    {
+      "id": 6,
+      "severity": "NIT",
+      "where": "design.md §6; scripts/check_submission.py (n>=24 and nt>=12 for PASS)",
+      "problem": "The eval coverage matrix sums above the PASS bar, but the per-bucket minimums and the test-split label balance are not stated as a hard invariant, so a thin or label-skewed generation could slip through to ./kit bench.",
+      "fix": "Add an invariant to §6: the generated eval_cases.jsonl MUST contain >=24 rows with >=12 split:'test', and for each of the four nouls both 'yes' and 'no' must appear in the test split."
+    }
+  ],
+  "reviewDoc": "/Users/madhumithaa/Downloads/Strands_hackathon/.agents/tasks/reflex-arc/design-review.md"
+}

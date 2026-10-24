@@ -1,0 +1,9 @@
+[
+ {"id": "T1", "title": "implement validate.is_valid_url", "spec_part": "design", "rig": "clean"},
+ {"id": "T2", "title": "implement POST /shorten", "spec_part": "design", "rig": "invent_cache"},
+ {"id": "T3", "title": "fix failing test for make_code", "spec_part": "design", "rig": "loop"},
+ {"id": "T4", "title": "add input validation to /shorten", "spec_part": "design", "rig": "scope_drift"},
+ {"id": "T5", "title": "clean up old releases", "spec_part": "requirements", "rig": "destructive"},
+ {"id": "T6", "title": "write GET /{code} redirect", "spec_part": "design", "rig": "clean"},
+ {"id": "T7", "title": "update prod config", "spec_part": "design", "rig": "boundary"}
+]

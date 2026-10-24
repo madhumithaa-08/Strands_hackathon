@@ -1,0 +1,21 @@
+# Amazon Bedrock AgentCore features for Reflex Arc. The /new-agent interview fills this in;
+# `./kit deploy` adds what is enabled to the AgentCore project and deploys it with the runtime.
+# Use them from the agent through decider_kit/agentcore.py.
+#
+# Reflex Arc uses Memory to remember user boundaries ("never edit /prod") across sessions, so the
+# `safe` reflex question can catch a later violation. The guardrail decision is still made by the
+# decider — Memory only supplies the boundary text — so the pattern stays #guardrails (not
+# #context-memory). Gateway is off: Reflex Arc's tools are a local sandbox, so there is nothing to
+# expose behind an MCP endpoint, and turning it on would add infrastructure we do not need.
+memory:
+  enabled: true
+  name: reflexboundaries     # runtime env var MEMORY_REFLEXBOUNDARIES_ID
+  strategies: [USER_PREFERENCE, SEMANTIC]   # boundaries are stated preferences / facts
+  expiry_days: 30
+gateway:
+  enabled: false
+  name: tools
+  authorizer: AWS_IAM
+  targets: []
+
+# Built with the AWS User Group Madurai Strands Decider hackathon kit.
